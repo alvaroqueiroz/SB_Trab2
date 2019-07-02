@@ -10,6 +10,9 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
 //#include "pre_processor.h"
 //#include "ifequ.h"
 
@@ -40,11 +43,13 @@
 #define OP_STORE            11
 #define OP_INPUT            12
 #define OP_OUTPUT           13
+#define OP_STOP             14
 #define OP_C_INPUT          15
 #define OP_C_OUTPUT         16
 #define OP_S_INPUT          19
 #define OP_S_OUTPUT         20
-#define OP_STOP             14
+#define OP_H_INPUT          21
+#define OP_H_OUTPUT         22
 #define OP_BASIC_OP			215
 /*------------------------------------*/
 

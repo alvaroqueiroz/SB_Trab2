@@ -195,7 +195,7 @@ int is_mnemonic(Token & token){
         token.addit_info = OP_SUB;
         return OP_SUB;
     }else
-    if (token.str.compare("MUL") == 0){
+    if (token.str.compare("MULT") == 0){
         token.type = TT_MNEMONIC;
         token.addit_info = OP_MULT;
         return OP_MULT;
@@ -275,6 +275,16 @@ int is_mnemonic(Token & token){
         token.addit_info = OP_STOP;
         return OP_STOP;
     }else
+    if (token.str.compare("H_INPUT") == 0){
+        token.type = TT_MNEMONIC;
+        token.addit_info = OP_H_INPUT;
+        return OP_H_INPUT;
+    }else
+    if (token.str.compare("H_OUTPUT") == 0){
+        token.type = TT_MNEMONIC;
+        token.addit_info = OP_H_OUTPUT;
+        return OP_H_OUTPUT;
+    }else
     if (token.str.compare(",") == 0){
         token.type = TT_COMMA_OPERATOR;
         token.addit_info = OP_BASIC_OP;
@@ -321,6 +331,8 @@ int is_label(Token & token, list<Token> & labellist){
                 token.str.compare("C_OUTPUT:") == 0 || \
                 token.str.compare("S_INPUT:") == 0 || \
                 token.str.compare("S_OUTPUT:") == 0 || \
+                token.str.compare("H_OUTPUT:") == 0 || \
+                token.str.compare("H_INPUT:") == 0  || \
                 token.str.compare("STOP:") == 0 || \
                 token.str.compare("SECTION:") == 0 || \
                 token.str.compare("TEXT:") == 0 || \
