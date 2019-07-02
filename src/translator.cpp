@@ -47,7 +47,7 @@ int translator (list <Token> & tokenlist, char * s){
 				transl_directive(it, s);
 			break;
 			case TT_OPERAND          	:
-				transl_label(it, s);
+				transl_operand(it, s);
 			case TT_CONST        		:
 			case TT_COMMA_OPERATOR   	:
 			case TT_PLUS_OPERATOR		:
@@ -58,7 +58,6 @@ int translator (list <Token> & tokenlist, char * s){
 			break;
 			default:
 				cerr << "Parser: unknowm token type (" << it->str << ")." << endl;
-				it++;
 			break;
 		}
 	}
@@ -73,8 +72,11 @@ void printios(char * s, vector<int> & io){
 	sort( io.begin(), io.end() );
 
 	for (auto it = io.begin(); it != io.end(); it++){
-		cout << *it << " ";
+		cout << to_string(*it)+".txt" << " Opened\n";
+		nasmfile << infile.rdbuf();
+		infile.close();
 	}
+	nasmfile.close();
 
 
 }
@@ -401,8 +403,17 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 	nasmfile.close();
 	return it;
 }
-
-list<Token>::iterator transl_label(list<Token>::iterator it, char * s){
+void transl_label(list<Token>::iterator it, char * s){
+	ofstream nasmfile( s, ios::out | ios::app);
+	if (nasmfile.is_open()){
+		nasmfile << it->str << " ";
+	}else{
+		cout << "Falha na criação ou abertura do arquivo." << endl;
+		exit(EXIT_FAILURE);
+	}
+	nasmfile.close();
+}
+list<Token>::iterator transl_operand(list<Token>::iterator it, char * s){
 	ofstream nasmfile( s, ios::out | ios::app);  //opens NASM file in output mode - always writes at end (append)
 	list<Token>::iterator a;
 	a = it;
