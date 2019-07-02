@@ -195,7 +195,7 @@ int is_mnemonic(Token & token){
         token.addit_info = OP_SUB;
         return OP_SUB;
     }else
-    if (token.str.compare("MULT") == 0){
+    if (token.str.compare("MUL") == 0){
         token.type = TT_MNEMONIC;
         token.addit_info = OP_MULT;
         return OP_MULT;
