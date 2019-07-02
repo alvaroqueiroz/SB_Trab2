@@ -4,7 +4,7 @@
 
 int translator (list <Token> & tokenlist, char * s){
 	list<Token>::iterator it;
-	ofstream nasmfile( s, ios_base::app);  //opens NASM file in output mode - always writes at end (append)
+	ofstream nasmfile( s, ios_base::out);  //opens NASM file in output mode - always writes at end (append)
 	if (nasmfile.is_open())
 		nasmfile << "global      _start" << endl;
 	else{

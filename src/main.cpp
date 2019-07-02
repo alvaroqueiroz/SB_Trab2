@@ -18,10 +18,13 @@ using namespace std;
 int error_found;
 
 
-int main (){
+int main (int argc, char* argv[]){
     list<Token> tokenlist, labellist;
     list<Token>::iterator it, aux;
-    char inp_filename[] = "arquivo.asm";       //defines input file name
+
+    
+    
+    char* inp_filename = argv[1];       //defines input file name                                      
     char out_filename[] = "arquivo.s";       //defines input file name
 
     scanner(inp_filename , tokenlist, labellist);     //creates tokenlist with educational assembly code
