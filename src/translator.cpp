@@ -327,6 +327,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 
 				 nasmfile << "mov edx, ";
 				 it++;
+				 it++;
 				 nasmfile << it->str << endl;
 				 it++;
 				 nasmfile << "int 0x80"<< endl;
@@ -348,6 +349,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 nasmfile << it->str << endl;
 
 				 nasmfile << "mov edx, ";
+				 it++;
 				 it++;
 				 nasmfile << it->str << endl;
 				 it++;

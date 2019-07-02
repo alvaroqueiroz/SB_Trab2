@@ -260,12 +260,12 @@ int is_mnemonic(Token & token){
         token.addit_info = OP_C_OUTPUT;
         return OP_C_OUTPUT;
     }else
-    if (token.str.compare("C_INPUT") == 0){
+    if (token.str.compare("S_INPUT") == 0){
         token.type = TT_MNEMONIC;
         token.addit_info = OP_S_INPUT;
         return OP_C_INPUT;
     }else
-    if (token.str.compare("C_OUTPUT") == 0){
+    if (token.str.compare("S_OUTPUT") == 0){
         token.type = TT_MNEMONIC;
         token.addit_info = OP_S_OUTPUT;
         return OP_C_OUTPUT;
