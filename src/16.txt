@@ -1,0 +1,8 @@
+escreveCaractere:
+    enter 0,0
+    mvo eax, 4
+    mvo ebx, 1
+    mov ecx, [ebp + 8]
+    mov edx, 1
+    leave
+    ret

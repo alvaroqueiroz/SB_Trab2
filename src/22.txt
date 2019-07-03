@@ -1,42 +1,40 @@
  
-_printHEX:
+escreveHexa:
         enter 0,0
         mov eax, [ebp+8]
-        mov word [sum_out], 10
-        mov ecx, sum_out
-        inc ecx 
+        push dword 10
+        mov esi, esp
 
-_printHEXloop:
+_printEAXloop:
         sub edx, edx
         mov ebx, 16
         div ebx
 
-        cmp dl, 10
-        jge _letraHEX
+        cmp edx, 10
+        jge _letra
 
         add edx, 48 ; ascii for '0'
-_continueHEX:
+_continue:
 
-        mov [ecx], dl  
-        inc ecx
+        push edx  
     
         cmp eax, 0
-        jne _printHEXloop
+        jne _printEAXloop
 
-_printHEXloop2:
+_printEAXloop2:
         mov eax, 4
         mov ebx, 1 ; ecx is already defined
+        mov ecx, esp
         mov edx, 1
         int 80h
 
-        dec ecx
-
-        cmp ecx, sum_out
-        jge _printHEXloop2
+        pop ecx
+        cmp esp, esi
+        jbe _printEAXloop2
 
         leave
         ret
 
-_letraHEX:
+_letra:
         add edx, 55
-        jmp _continueHEX
+        jmp _continue

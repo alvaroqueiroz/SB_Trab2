@@ -5,6 +5,7 @@
 int translator (list <Token> & tokenlist, char * s){
 	list<Token>::iterator it, aux;
 	vector<int> io;
+	int linhaif = -1;
 	ofstream nasmfile( s, ios_base::out);  //opens NASM file in output mode - always writes at end (append)
 	if (nasmfile.is_open())
 		nasmfile << "global      _start" << endl;
@@ -15,6 +16,12 @@ int translator (list <Token> & tokenlist, char * s){
 	nasmfile.close();
 
 	for (it = tokenlist.begin();it != tokenlist.end(); it++){	//scans whole file
+		if(linhaif == it->line_number){
+			ofstream nasmfile( s, ios_base::out | ios::app);
+			nasmfile << "_skip: \n";
+			nasmfile.close();
+			linhaif = -1;
+		}
 		switch (it->type){
 			case TT_MNEMONIC:		//check OPCODE table
 				#ifdef __DEBUG2__
@@ -25,14 +32,12 @@ int translator (list <Token> & tokenlist, char * s){
 				}
 				transl_mnemonic(it, s);
 			break;
-
 			case TT_LABEL:
 				#ifdef __DEBUG2__
 				cout << "foi-label - " << it->str << endl;
 				#endif
 				transl_label(it, s);
 			break;
-
 			case TT_DIRECTIVE:
 				if(it->addit_info == DIR_SECTION){
 					aux = it;
@@ -44,10 +49,11 @@ int translator (list <Token> & tokenlist, char * s){
 				#ifdef __DEBUG2__
 				cout << "foi-directive - " << it->str << endl;
 				#endif
-				transl_directive(it, s);
+				transl_directive(it, s, linhaif);
 			break;
 			case TT_OPERAND          	:
 				transl_operand(it, s);
+			break;
 			case TT_CONST        		:
 			case TT_COMMA_OPERATOR   	:
 			case TT_PLUS_OPERATOR		:
@@ -59,10 +65,11 @@ int translator (list <Token> & tokenlist, char * s){
 			default:
 				cerr << "Parser: unknowm token type (" << it->str << ")." << endl;
 			break;
-		}
+		}		
 	}
 	return 0;
 }
+
 void printios(char * s, vector<int> & io){
 	ofstream nasmfile( s, ios::out | ios::app);
 	unordered_set<int> aux;
@@ -72,10 +79,11 @@ void printios(char * s, vector<int> & io){
 	sort( io.begin(), io.end() );
 
 	for (auto it = io.begin(); it != io.end(); it++){
-		cout << to_string(*it)+".txt" << " Opened\n";
+		ifstream infile(to_string(*it)+".txt");
 		nasmfile << infile.rdbuf();
 		infile.close();
 	}
+	nasmfile << "\n";
 	nasmfile.close();
 
 
@@ -254,129 +262,75 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 		 break;
 		 case OP_INPUT    :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 3"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-
-//				 it++;
+				 nasmfile << it->str << "]\n call leInteiro\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 		 break;
 		 case OP_OUTPUT   :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 4"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-	//			 it++;
-
+				 nasmfile << it->str << "]\n call escreveInteiro\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
-
-
 			break;
 		 case OP_C_INPUT  :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 3"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-	//			 it++;
+				 nasmfile << it->str << "]\n call leCaractere\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 			break;
 		 case OP_C_OUTPUT :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 4"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-
-	//			 it++;
-
+				 nasmfile << it->str << "]\n call escreveCaractere\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 			break;
 		 case OP_S_INPUT  :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 3"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, ";
+				 nasmfile << it->str << "]\npush dword [";
 				 it++;
-				 it++;
-				 nasmfile << it->str << endl;
-				 it++;
-				 nasmfile << "int 0x80"<< endl;
-
+				 nasmfile << it->str << "]\n";
+				nasmfile<<"call leString\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
+
 
 
 		 break;
 		 case OP_S_OUTPUT :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 4"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, ";
+				 nasmfile << it->str << "]\npush dword [";
 				 it++;
-				 it++;
-				 nasmfile << it->str << endl;
-				 it++;
-				 nasmfile << "int 0x80"<< endl;
-
+				 nasmfile << it->str << "]\n";
+				nasmfile<<"call escreveString\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 			break;
 		 case OP_STOP     :
@@ -389,14 +343,22 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
+			 break;
+		 case OP_H_INPUT:
+		 	if (nasmfile.is_open()){
+				nasmfile << "pusha\ncall _inputHEX\npopa\n";
+			}	 
+		 case OP_H_OUTPUT:
+			if (nasmfile.is_open()){
+				nasmfile << "pusha\npush dword [hexnum]\ncall _printHEX\npopa\n";
+			}
 		 break;
 		 case OP_BASIC_OP :      //"+, -, /, *, %"
 
 		 break;
 
 		 default:
-			 cerr << "Parser: unknowm token type (" << it->str << ")." << endl;
+			 //cerr << "Parser: unknowm token type (" << it->str << ")." << endl;
 //			 it++;
 		 break;
 	}
@@ -433,62 +395,52 @@ list<Token>::iterator transl_operand(list<Token>::iterator it, char * s){
 	return it;
 }
 bool data_bss_flag = false;
-list<Token>::iterator transl_directive(list<Token>::iterator it, char * s){
-	int i =0;
+list<Token>::iterator transl_directive(list<Token>::iterator it, char * s, int & linhaif){
+
 	ofstream nasmfile( s, ios::out | ios::app);  //opens NASM file in output mode - always writes at end (append)
 	switch (it->addit_info){
 		break;
 		case DIR_SPACE :
-            nasmfile << "dw 1" << endl;
-//            it++;
-
+            nasmfile << "times ";
+			it++;
+			if (it->type == TT_CONST){
+				nasmfile << it->str << " ";
+			}else{
+				nasmfile << "1";
+			}
+			nasmfile << "dd 0";
 		break;
 		case DIR_CONST :
-            nasmfile << "dw ";
+            nasmfile << "dd ";
             it++;
-            nasmfile << it->str << endl;
-//            it++;
+			nasmfile << it->str << "\n";
 
 		break;
 		case DIR_EQU :
 		if (nasmfile.is_open()){
-			nasmfile << "%define ";
+			nasmfile << " EQU ";
 			it++;
-			nasmfile << it->str << " ";
-			it++;
-			nasmfile << it->str << endl;
+			nasmfile << it->str << "\n";
 		}else{
 			cout << "Falha na criação ou abertura do arquivo." << endl;
 			exit(EXIT_FAILURE);
 		}
 		break;
 		case DIR_IF :
-		i = it->line_number;
 		if (nasmfile.is_open()){
-			nasmfile << "%if<";
+			nasmfile << "mov ebx, ";
 			it++;
-			while (it->line_number == i){
-				nasmfile << it->str << " ";
-				it++;
-			}
-			nasmfile << ">" << endl;
-			i++;
-			while (it->line_number == i){
-				nasmfile << it->str << " ";
-				it++;
-			}
-			nasmfile << endl;
+			nasmfile << it->str << " \n";
+			nasmfile << "cmp ebx, 1\npop ebx\njne _skip\n";
+			
+			linhaif = it->line_number + 2;
+
 		}else{
 			cout << "Falha na criação ou abertura do arquivo." << endl;
 			exit(EXIT_FAILURE);
 		}
 		break;
-		case DIR_MACRO :
 
-		break;
-		case DIR_ENDMACRO :
-
-		break;
 		case DIR_TEXT :
 			if (nasmfile.is_open())
 				nasmfile << "section .text" << endl << "_start: " << endl;
@@ -509,18 +461,7 @@ list<Token>::iterator transl_directive(list<Token>::iterator it, char * s){
 				}
 			}
 		break;
-		case DIR_BEGIN :
 
-		break;
-		case DIR_END :
-
-		break;
-		case DIR_EXTERN :
-
-		break;
-		case DIR_PUBLIC :
-
-		break;
 		case DIR_BSS :
 			if (!data_bss_flag) {
 				data_bss_flag = !data_bss_flag;
@@ -531,7 +472,6 @@ list<Token>::iterator transl_directive(list<Token>::iterator it, char * s){
 					exit(EXIT_FAILURE);
 				}
 			}
-		break;
 		break;
 
 		default:
