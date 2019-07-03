@@ -1,34 +1,32 @@
-_printNUM:
+ 
+escreveInteiro:
         enter 0,0
         mov eax, [ebp+8]
-        mov word [sum_out], 10
-        mov ecx, sum_out
-        inc ecx 
+        push dword 10
+        mov esi, esp
 
-_printNUMloop:
+escreveInteiroLoop:
         sub edx, edx
         mov ebx, 10
         div ebx
 
-        cmp dl, 10
         add edx, 48 ; ascii for '0'
 
-        mov [ecx], dl  
-        inc ecx
+        push edx  
     
         cmp eax, 0
-        jne _printNUMloop
+        jne escreveInteiroLoop
 
-_printNUMloop2:
+escreveInteiroLoop2:
         mov eax, 4
         mov ebx, 1 ; ecx is already defined
+        mov ecx, esp
         mov edx, 1
         int 80h
 
-        dec ecx
-
-        cmp ecx, sum_out
-        jge _printNUMloop2
+        pop ecx
+        cmp esp, esi
+        jbe escreveInteiroLoop2
 
         leave
         ret

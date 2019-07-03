@@ -262,129 +262,69 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 		 break;
 		 case OP_INPUT    :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 3"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-
-//				 it++;
+				 nasmfile << it->str << "]\n call leInteiro\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 		 break;
 		 case OP_OUTPUT   :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 4"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-	//			 it++;
-
+				 nasmfile << it->str << "]\n call escreveInteiro\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
-
-
 			break;
 		 case OP_C_INPUT  :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 3"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-	//			 it++;
+				 nasmfile << it->str << "]\n call leCaractere\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 			break;
 		 case OP_C_OUTPUT :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 4"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, 1" << endl;
-				 nasmfile << "int 0x80"<< endl;
-
-	//			 it++;
-
+				 nasmfile << it->str << "]\n call escreveCaractere\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 			break;
 		 case OP_S_INPUT  :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 3"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, ";
-				 it++;
-				 it++;
-				 nasmfile << it->str << endl;
-				 it++;
-				 nasmfile << "int 0x80"<< endl;
-
+				 nasmfile << it->str << "]\n call leString\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
+
 
 
 		 break;
 		 case OP_S_OUTPUT :
 			 if (nasmfile.is_open()){
-
-				 nasmfile << "mov eax, 4"<< endl;
-				 nasmfile << "mov ebx, 1"<< endl;
-				 nasmfile << "mov ecx, ";
+				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << endl;
-
-				 nasmfile << "mov edx, ";
-				 it++;
-				 it++;
-				 nasmfile << it->str << endl;
-				 it++;
-				 nasmfile << "int 0x80"<< endl;
-
+				 nasmfile << it->str << "]\n call escreveString\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
 			 }
-
 
 			break;
 		 case OP_STOP     :

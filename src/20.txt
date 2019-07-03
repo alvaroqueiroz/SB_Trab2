@@ -1,0 +1,19 @@
+escreveString:
+    sub edx, edx
+    mov eax, mensagem
+looping:
+    cmp byte [eax], 0
+    je keep
+    inc edx
+    inc eax
+    jmp looping
+
+keep:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, mensagem   
+    int 80h
+
+    mov eax, 1
+    mov ebx, 0
+    int 80h
