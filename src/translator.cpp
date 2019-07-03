@@ -408,7 +408,7 @@ list<Token>::iterator transl_directive(list<Token>::iterator it, char * s, int &
 			}else{
 				nasmfile << "1";
 			}
-			nasmfile << "dd 0";
+			nasmfile << "dd 0\n";
 		break;
 		case DIR_CONST :
             nasmfile << "dd ";
