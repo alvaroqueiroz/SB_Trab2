@@ -307,7 +307,10 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 			 if (nasmfile.is_open()){
 				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << "]\n call leString\npopa\n";
+				 nasmfile << it->str << "]\npush dword [";
+				 it++;
+				 nasmfile << it->str << "]\n";
+				nasmfile<<"call leString\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -320,7 +323,10 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 			 if (nasmfile.is_open()){
 				 nasmfile << "pusha\npush dword [";
 				 it++;
-				 nasmfile << it->str << "]\n call escreveString\npopa\n";
+				 nasmfile << it->str << "]\npush dword [";
+				 it++;
+				 nasmfile << it->str << "]\n";
+				nasmfile<<"call escreveString\npopa\n";
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
