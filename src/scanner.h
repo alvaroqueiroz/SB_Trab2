@@ -41,9 +41,9 @@
 #define OP_COPY             9
 #define OP_LOAD             10
 #define OP_STORE            11
-#define OP_INPUT            12
-#define OP_OUTPUT           13
-#define OP_STOP             14
+#define OP_STOP             12
+#define OP_INPUT            13
+#define OP_OUTPUT           14
 #define OP_C_INPUT          15
 #define OP_C_OUTPUT         16
 #define OP_S_INPUT          19
