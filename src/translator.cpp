@@ -401,10 +401,7 @@ list<Token>::iterator transl_directive(list<Token>::iterator it, char * s, int &
 	switch (it->addit_info){
 		break;
 		case DIR_SPACE :
-			it--;
-			nasmfile << it->str;
             nasmfile << " times ";
-			it++;
 			it++;
 
 			if (it->type == TT_CONST){
@@ -415,20 +412,14 @@ list<Token>::iterator transl_directive(list<Token>::iterator it, char * s, int &
 			nasmfile << " dd 0\n";
 		break;
 		case DIR_CONST :
-			it--;
-			nasmfile << it->str;
             nasmfile << " dd ";
-            it++;
 			it++;
 			nasmfile << it->str << "\n";
 
 		break;
 		case DIR_EQU :
 		if (nasmfile.is_open()){
-			it--;
-			nasmfile << it->str;
 			nasmfile << " EQU ";
-			it++;
 			it++;
 			nasmfile << it->str << "\n";
 		}else{
