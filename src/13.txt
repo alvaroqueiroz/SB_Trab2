@@ -1,6 +1,6 @@
 leInteiro:
-    enter 0,0
-    ;Read and store the user input
+   enter 0,0
+   ;Read and store the user input
    mov eax, 3
    mov ebx, 2
    mov ecx, num  

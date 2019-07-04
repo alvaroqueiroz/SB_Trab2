@@ -1,7 +1,7 @@
 #include "translator.h"
 
 //#define __DEBUG2__
-bool ifdef_flag = false;
+
 int translator (list <Token> & tokenlist, char * s){
 	list<Token>::iterator it, aux;
 	vector<int> io;
@@ -27,6 +27,9 @@ int translator (list <Token> & tokenlist, char * s){
 				#ifdef __DEBUG2__
 				cout << "foi-mnemonic - " << it->str << endl;
 				#endif
+				if(it->addit_info >= OP_INPUT && it->addit_info <= OP_H_OUTPUT){
+					io.push_back(it->addit_info);
+				}
 				transl_mnemonic(it, s);
 			break;
 			case TT_LABEL:
@@ -36,12 +39,20 @@ int translator (list <Token> & tokenlist, char * s){
 				transl_label(it, s);
 			break;
 			case TT_DIRECTIVE:
+				if(it->addit_info == DIR_SECTION){
+					aux = it;
+					aux++;
+					if(aux->type == TT_DIRECTIVE && aux->addit_info == DIR_DATA){
+						printios(s, io);
+					}
+				}
 				#ifdef __DEBUG2__
 				cout << "foi-directive - " << it->str << endl;
 				#endif
 				transl_directive(it, s, linhaif);
 			break;
 			case TT_OPERAND          	:
+				transl_operand(it, s);
 			break;
 			case TT_CONST        		:
 			case TT_COMMA_OPERATOR   	:
@@ -53,7 +64,6 @@ int translator (list <Token> & tokenlist, char * s){
 			break;
 			default:
 				cerr << "Parser: unknowm token type (" << it->str << ")." << endl;
-				it++;
 			break;
 		}		
 	}
@@ -85,35 +95,30 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 			if (nasmfile.is_open()){
 			 	nasmfile << "add eax, ";
                 it++;
-                if (it->type == TT_CONST || it->type == DIR_EQU) {
+                if (it->type == TT_CONST) {
                     nasmfile << it->str << endl;
                 }else{
                     nasmfile << "[" << it->str << "]" << endl;
                 }
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
+            //    it++;
 
 			}else{
 		 		cout << "Falha na criação ou abertura do arquivo." << endl;
 		 		exit(EXIT_FAILURE);
 			}
+
 		 break;
 		 case OP_SUB      :
 		 if (nasmfile.is_open()){
 			nasmfile << "sub eax, ";
              it++;
-             if (it->type == TT_CONST || it->type == DIR_EQU) {
+             if (it->type == TT_CONST) {
                  nasmfile << it->str << endl;
              }else{
                  nasmfile << "[" << it->str << "]" << endl;
              }
              it++;
-			if(ifdef_flag) {
-				nasmfile << "%endif" << endl;
-				ifdef_flag = !ifdef_flag;
-			}
+
          }else{
 			cout << "Falha na criação ou abertura do arquivo." << endl;
 			exit(EXIT_FAILURE);
@@ -124,16 +129,12 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 		 if (nasmfile.is_open()){
 			 nasmfile << "imul ";
 			 it++;
-			 if (it->type == TT_CONST || it->type == DIR_EQU) {
+			 if (it->type == TT_CONST) {
 				 nasmfile << it->str << endl;
 			 }else{
-				 nasmfile << "DWORD[" << it->str << "]" << endl;
+				 nasmfile << "DWORD [" << it->str << "]" << endl;
 			 }
 			 nasmfile << "sub eax, 0x30" << endl;
-			if(ifdef_flag) {
-				nasmfile << "%endif" << endl;
-				ifdef_flag = !ifdef_flag;
-			}
 
 		 }else{
 			 cout << "Falha na criação ou abertura do arquivo." << endl;
@@ -143,18 +144,13 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 
 		 case OP_DIV      :
 			 if (nasmfile.is_open()){
-				 nasmfile << "push edx" << endl << "idiv ";
+				 nasmfile << "cdq\nidiv ";
                  it++;
-                 if (it->type == TT_CONST || it->type == DIR_EQU) {
+                 if (it->type == TT_CONST) {
                      nasmfile << it->str << endl;
                  }else{
                      nasmfile << "DWORD[" << it->str << "]" << endl;
                  }
-				 nasmfile << "pop edx" << endl;
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -167,10 +163,6 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 it++;
 				 nasmfile << it->str << endl;
 				 it++;
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -184,10 +176,6 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 it++;
 				 nasmfile << it->str << endl;
 	//			 it++;
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -201,10 +189,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 nasmfile << "ja ";
 				 it++;
 				 nasmfile << it->str << endl;
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
+		//		 it++;
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -217,10 +202,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 nasmfile << "je ";
 				 it++;
 				 nasmfile << it->str << endl;
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
+	//			 it++;
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -229,26 +211,14 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 		 break;
 		 case OP_COPY     :
 			 if (nasmfile.is_open()){
-				 nasmfile << "mov ";
-                 it++;
-                 if (it->type == TT_CONST || it->str == "eax" || it->str == "ebx" || it->str == "ecx" || it->str == "edx" ) {
-                     nasmfile << it->str;
-                 }else{
-                     nasmfile << "[" << it->str << "]";
-                 }
-
-                 nasmfile << " , ";
+				 nasmfile << "mov eax, ";
+                 it++; 
+                 nasmfile << "[" << it->str << "]\nmov ";
 				 it++;
 				 it++;
-                 if (it->type == TT_CONST || it->str == "eax" || it->str == "ebx" || it->str == "ecx" || it->str == "edx" ) {
-                     nasmfile << it->str << endl;
-                 }else{
-                     nasmfile << "[" << it->str << "]" << endl;
-                 }
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
+                 nasmfile << "[" << it->str << "], eax" << endl;
+                 
+	//			 it++;
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -264,10 +234,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
                  }else{
                      nasmfile << "[" << it->str << "]" << endl;
                  }
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
+	//			 it++;
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -371,10 +338,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 				 nasmfile << "mov eax, 1"<< endl;
 				 nasmfile << "mov ebx, 0"<< endl;
 				 nasmfile << "int 0x80"<< endl;
-				if(ifdef_flag) {
-					nasmfile << "%endif" << endl;
-					ifdef_flag = !ifdef_flag;
-				}
+
 			 }else{
 				 cout << "Falha na criação ou abertura do arquivo." << endl;
 				 exit(EXIT_FAILURE);
@@ -401,12 +365,28 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 	nasmfile.close();
 	return it;
 }
-
-list<Token>::iterator transl_label(list<Token>::iterator it, char * s){
-	ofstream nasmfile( s, ios::out | ios::app);  //opens NASM file in output mode - always writes at end (append)
-	if (nasmfile.is_open())
+void transl_label(list<Token>::iterator it, char * s){
+	ofstream nasmfile( s, ios::out | ios::app);
+	if (nasmfile.is_open()){
 		nasmfile << it->str << " ";
-	else{
+	}else{
+		cout << "Falha na criação ou abertura do arquivo." << endl;
+		exit(EXIT_FAILURE);
+	}
+	nasmfile.close();
+}
+list<Token>::iterator transl_operand(list<Token>::iterator it, char * s){
+	ofstream nasmfile( s, ios::out | ios::app);  //opens NASM file in output mode - always writes at end (append)
+	list<Token>::iterator a;
+	a = it;
+	a++;
+	if (nasmfile.is_open()){
+		if(a->type == TT_DIRECTIVE){
+			if(a->addit_info >= DIR_SPACE && a->addit_info <= DIR_EQU){
+				nasmfile << it->str << " ";
+			}
+		}
+	}else{
 		cout << "Falha na criação ou abertura do arquivo." << endl;
 		exit(EXIT_FAILURE);
 	}
@@ -432,7 +412,7 @@ list<Token>::iterator transl_directive(list<Token>::iterator it, char * s, int &
 			}else{
 				nasmfile << "1 ";
 			}
-			nasmfile << "dd 0\n";
+			nasmfile << " dd 0\n";
 		break;
 		case DIR_CONST :
 			it--;
