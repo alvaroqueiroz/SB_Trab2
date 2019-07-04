@@ -1,3 +1,4 @@
+
 escreveCaractere:
     enter 0,0
     mvo eax, 4

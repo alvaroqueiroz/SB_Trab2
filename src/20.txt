@@ -1,3 +1,4 @@
+
 escreveString:
         enter 0,0
         mov ecx, [ebp+12]

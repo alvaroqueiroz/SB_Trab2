@@ -1,3 +1,4 @@
+
 leInteiro:
    enter 0,0
    ;Read and store the user input
@@ -6,6 +7,5 @@ leInteiro:
    mov ecx, num  
    mov edx, 32          
    int 80h
-
    leave
    ret
