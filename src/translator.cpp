@@ -95,7 +95,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 			if (nasmfile.is_open()){
 			 	nasmfile << "add eax, ";
                 it++;
-                if (it->type == TT_CONST) {
+                if (it->type == TT_CONST || it->type == DIR_EQU) {
                     nasmfile << it->str << endl;
                 }else{
                     nasmfile << "[" << it->str << "]" << endl;
@@ -112,8 +112,9 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 		 if (nasmfile.is_open()){
 			nasmfile << "sub eax, ";
              it++;
-             if (it->type == TT_CONST) {
+             if (it->type == TT_CONST || it->type == DIR_EQU) {
                  nasmfile << it->str << endl;
+				 nasmfile << it->type << endl;
              }else{
                  nasmfile << "[" << it->str << "]" << endl;
              }
@@ -129,7 +130,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 		 if (nasmfile.is_open()){
 			 nasmfile << "imul ";
 			 it++;
-			 if (it->type == TT_CONST) {
+			 if (it->type == TT_CONST || it->type == DIR_EQU) {
 				 nasmfile << it->str << endl;
 			 }else{
 				 nasmfile << "DWORD [" << it->str << "]" << endl;
@@ -146,7 +147,7 @@ list<Token>::iterator transl_mnemonic(list<Token>::iterator it, char * s){
 			 if (nasmfile.is_open()){
 				 nasmfile << "cdq\nidiv ";
                  it++;
-                 if (it->type == TT_CONST) {
+                 if (it->type == TT_CONST || it->type == DIR_EQU) {
                      nasmfile << it->str << endl;
                  }else{
                      nasmfile << "DWORD[" << it->str << "]" << endl;

@@ -6,6 +6,7 @@ Trabalho Pratico 2 - Tradutor
 
 Alunos: 
         Alvaro Queiroz dos Reis Silva       15/0155280
+        Ian Moura Alexandre                 15/0129661
 */
 
 
