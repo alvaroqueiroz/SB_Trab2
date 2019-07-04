@@ -42,7 +42,6 @@ int translator (list <Token> & tokenlist, char * s){
 				transl_directive(it, s, linhaif);
 			break;
 			case TT_OPERAND          	:
-				transl_operand(it, s);
 			break;
 			case TT_CONST        		:
 			case TT_COMMA_OPERATOR   	:
